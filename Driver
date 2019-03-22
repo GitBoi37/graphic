@@ -1,0 +1,25 @@
+
+import java.awt.EventQueue;
+import javax.swing.JFrame;
+
+public class DonutAnimationEx extends JFrame{
+    public DonutAnimationEx(){
+        initUI();
+    }
+    private void initUI(){
+        add(new AnimBoard());
+        setSize(1000, 1000);
+        setResizable(false);
+        pack();
+        setTitle("Donut Animation");
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        
+    }
+    public static void main(String[] args){
+        EventQueue.invokeLater(() -> { 
+            JFrame ex = new DonutAnimationEx();
+            ex.setVisible(true);
+        });
+    }
+}
