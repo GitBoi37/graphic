@@ -1,21 +1,21 @@
 package rectsNdots;
 
-
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import javax.swing.JPanel;
 import java.awt.Toolkit;
+import java.awt.Font;
 import javax.swing.JOptionPane;
 import java.awt.event.*;
-@SuppressWarnings("serial")
 public class AnimBoard extends JPanel implements Runnable, KeyListener{
     private Thread animator;
     private final int DELAY = 5;
-    private final int s = 10;
+    private final int s = 100;
     private Rect player = new Rect();
     private Dot[] dots = new Dot[1000];
+    private int score = 0;
     public AnimBoard(){
         super();
         setBackground(Color.BLACK);
@@ -39,31 +39,33 @@ public class AnimBoard extends JPanel implements Runnable, KeyListener{
         
         g2d.setColor(Color.YELLOW);
         for(int i = 0; i < dots.length; i++){
-        	if(dots[i] != null) {
-        		g2d.fillRect(dots[i].getX(),dots[i].getY(), dots[i].getSize(), dots[i].getSize());
-        	}
+            if(dots[i] != null) {
+                g2d.fillRect(dots[i].getX(),dots[i].getY(), dots[i].getSize(), dots[i].getSize());
+            }
         }
         g2d.setColor(Color.BLUE);
         g2d.fill(player.getRect());
-        
+        g2d.setColor(Color.WHITE);
+        g2d.setFont(new Font("Times New Roman", Font.PLAIN, 30));
+        g2d.drawString("Score: " + String.valueOf(score), 150, 100);
         Toolkit.getDefaultToolkit().sync();
     }
     public void keyTyped(KeyEvent key){ } 
     public void keyReleased(KeyEvent key){
         if (key.getKeyCode() == KeyEvent.VK_A) {
-        	player.modifyX(0);
+            player.modifyX(0);
         }
 
         if (key.getKeyCode() == KeyEvent.VK_S) {
-        	player.modifyX(0);
+            player.modifyX(0);
         }
 
         if (key.getKeyCode() == KeyEvent.VK_D) {
-        	player.modifyY(0);
+            player.modifyY(0);
         }
 
         if (key.getKeyCode() == KeyEvent.VK_W) {
-        	player.modifyY(0);
+            player.modifyY(0);
         }
     }
     public void keyPressed(KeyEvent key){
@@ -71,23 +73,23 @@ public class AnimBoard extends JPanel implements Runnable, KeyListener{
             player.setX(player.getX()-s);
         }
         if(key.getKeyCode() == KeyEvent.VK_S){
-        	player.setY(player.getY()+s);
+            player.setY(player.getY()+s);
         }
         if(key.getKeyCode() == KeyEvent.VK_D){
-        	player.setX(player.getX()+s);
+            player.setX(player.getX()+s);
         }
         if(key.getKeyCode() == KeyEvent.VK_W){
-        	player.setY(player.getY()-s);
+            player.setY(player.getY()-s);
         }
         if(key.getKeyCode() == KeyEvent.VK_Q) {
-        	if(player.getSize()>20) {
-        		player.setSize(player.getSize()-10);
-        	}
+            if(player.getSize()>20) {
+                player.setSize(player.getSize()-10);
+            }
         }
         if(key.getKeyCode() == KeyEvent.VK_E) {
-        	if(player.getSize() < 2000) {
-        		player.setSize(player.getSize()+10);
-        	}
+            if(player.getSize() < 2000) {
+                player.setSize(player.getSize()+10);
+            }
         }
     }
     @Override
@@ -97,12 +99,20 @@ public class AnimBoard extends JPanel implements Runnable, KeyListener{
         animator.start();
     }
     public void check(){
-    	if(player.getX() < -10) {
-    		player.setX(1);
-    	}
-    	if(player.getY() < -10) {
-    		player.setY(1);
-    	}
+        for(int i = 0; i < dots.length; i++){
+            if(dots[i] != null){
+                if((player.getRect()).intersects(dots[i].bounds())){
+                    score++;
+                    dots[i] = null;
+                }
+            }
+        }
+        if(player.getX() < -10) {
+            player.setX(1);
+        }
+        if(player.getY() < -10) {
+            player.setY(1);
+        }
         if(player.getY() < 0 || player.getY() < 0){
             explode();
         }
@@ -116,7 +126,7 @@ public class AnimBoard extends JPanel implements Runnable, KeyListener{
             player.setSize(2);
         } 
         if(player.getY() > this.getHeight() -player.getSize() -5) {
-        	player.modifyY(1);
+            player.modifyY(1);
         }
     }
     public void explode(){
