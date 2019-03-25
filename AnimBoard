@@ -1,42 +1,28 @@
-import java.awt.BasicStroke;
+package rectsNdots;
+
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.RenderingHints;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Ellipse2D;
 import javax.swing.JPanel;
 import java.awt.Toolkit;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Image;
-import java.awt.Toolkit;
-import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.*;
 import java.awt.event.*;
+@SuppressWarnings("serial")
 public class AnimBoard extends JPanel implements Runnable, KeyListener{
     private Thread animator;
-    private final int DELAY = 25;
-    private final int ROTATE = 5;
+    private final int DELAY = 5;
     private final int s = 10;
-    private int x;
-    private int y;
-    private int rSize;
-    private Dot[] dots;
+    private Rect player = new Rect();
+    private Dot[] dots = new Dot[1000];
     public AnimBoard(){
         super();
         setBackground(Color.BLACK);
-        setPreferredSize(new Dimension(2000, 2000));
         setFocusable(true);
         addKeyListener(this);
-        x = 0;
-        y = 0;   
-        rSize = 50;
-        Dot[] dots = new Dot[50];
+        Dimension d = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
+        setPreferredSize(d);
         for(int i = 0; i < dots.length; i++){
             dots[i] = new Dot();
             System.out.println(dots[i].getX());
@@ -45,52 +31,63 @@ public class AnimBoard extends JPanel implements Runnable, KeyListener{
             System.out.println(i.getX() + ", " + i.getY() +", " + i.getSize() + ", " + i.getColor());
         }
     }
-    public void explode(){
-        rSize+=1;
-    }
+    
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
+        
         g2d.setColor(Color.YELLOW);
         for(int i = 0; i < dots.length; i++){
-            g2d.fillRect(dots[i].getX(),dots[i].getY(), dots[i].getSize(), dots[i].getSize());
+        	if(dots[i] != null) {
+        		g2d.fillRect(dots[i].getX(),dots[i].getY(), dots[i].getSize(), dots[i].getSize());
+        	}
         }
         g2d.setColor(Color.BLUE);
-        g2d.fillRect(x, y, rSize, rSize);
+        g2d.fill(player.getRect());
         
         Toolkit.getDefaultToolkit().sync();
     }
     public void keyTyped(KeyEvent key){ } 
     public void keyReleased(KeyEvent key){
-        if (key.getKeyCode() == key.VK_A) {
-            x += 0;
+        if (key.getKeyCode() == KeyEvent.VK_A) {
+        	player.modifyX(0);
         }
 
-        if (key.getKeyCode() == key.VK_S) {
-            x += 0;
+        if (key.getKeyCode() == KeyEvent.VK_S) {
+        	player.modifyX(0);
         }
 
-        if (key.getKeyCode() == key.VK_D) {
-            y += 0;
+        if (key.getKeyCode() == KeyEvent.VK_D) {
+        	player.modifyY(0);
         }
 
-        if (key.getKeyCode() == key.VK_W) {
-            y += 0;
+        if (key.getKeyCode() == KeyEvent.VK_W) {
+        	player.modifyY(0);
         }
     }
     public void keyPressed(KeyEvent key){
-        if(key.getKeyCode() == key.VK_A){
-            x-=s;
+        if(key.getKeyCode() == KeyEvent.VK_A){
+            player.setX(player.getX()-s);
         }
-        if(key.getKeyCode() == key.VK_S){
-            y+=s;
+        if(key.getKeyCode() == KeyEvent.VK_S){
+        	player.setY(player.getY()+s);
         }
-        if(key.getKeyCode() == key.VK_D){
-            x+=s;
+        if(key.getKeyCode() == KeyEvent.VK_D){
+        	player.setX(player.getX()+s);
         }
-        if(key.getKeyCode() == key.VK_W){
-            y-=s;
+        if(key.getKeyCode() == KeyEvent.VK_W){
+        	player.setY(player.getY()-s);
+        }
+        if(key.getKeyCode() == KeyEvent.VK_Q) {
+        	if(player.getSize()>20) {
+        		player.setSize(player.getSize()-10);
+        	}
+        }
+        if(key.getKeyCode() == KeyEvent.VK_E) {
+        	if(player.getSize() < 2000) {
+        		player.setSize(player.getSize()+10);
+        	}
         }
     }
     @Override
@@ -100,18 +97,30 @@ public class AnimBoard extends JPanel implements Runnable, KeyListener{
         animator.start();
     }
     public void check(){
-        if(x < 0 || y < 0){
+    	if(player.getX() < -10) {
+    		player.setX(1);
+    	}
+    	if(player.getY() < -10) {
+    		player.setY(1);
+    	}
+        if(player.getY() < 0 || player.getY() < 0){
             explode();
         }
-        if(y > 2000-rSize || x > 2000-rSize){
+        if(player.getY() > this.getHeight()-player.getSize() -10 || player.getX() > this.getWidth()-player.getSize()-5){
            deexplode(); 
         }
     }
     public void deexplode(){
-        rSize-=1;
-        if(rSize < 2){
-            rSize = 2;
+        player.modifySize(-1);
+        if(player.getSize() < 2){
+            player.setSize(2);
+        } 
+        if(player.getY() > this.getHeight() -player.getSize() -5) {
+        	player.modifyY(1);
         }
+    }
+    public void explode(){
+        player.modifySize(1);
     }
     @Override
     public void run(){
@@ -120,10 +129,10 @@ public class AnimBoard extends JPanel implements Runnable, KeyListener{
         while(true){
             repaint();
             check();
-            timeDiff = System.currentTimeMillis();
+            timeDiff = System.currentTimeMillis() - beforeTime;
             sleep = DELAY - timeDiff;
             if(sleep < 0){
-                sleep = 2;
+                sleep = 1;
             }
             try{
                 Thread.sleep(sleep);
