@@ -1,13 +1,16 @@
-
+package rectsNdots;
+import java.awt.Dimension;
+import java.awt.Rectangle;
 public class Dot{
     private int y;
     private int x;
     private int size;
     private String color;
     public Dot(){
-        x = (int)(Math.random() * 1995 - size) + 5;
-        y = (int)(Math.random() * 1995 - size + 1);
-        size = 10;
+    	size = 3;
+    	Dimension d = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
+        x = (int)(Math.random() * d.getWidth() - size) + 5;
+        y = (int)(Math.random() * d.getHeight() - size + 1);
         color = "Color.YELLOW";
     }
     public int getX(){return x;}
@@ -18,4 +21,7 @@ public class Dot{
     public void setY(int y){this.y = y;}
     public void setSize(int size){this.size = size;}
     public void setColor(String color){this.color = color;}
+    public Rectangle bounds() {
+    	return (new Rectangle(x,y,size,size));
+    }
 }
