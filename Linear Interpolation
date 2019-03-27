@@ -1,10 +1,10 @@
 public class LinearInterpolation{
-    private int countt = 10;
-    private int aa = -100;
-    private int bb = 100;
+    private int countt = 17;//how many outputs you want
+    private int aa = 0;//starting value
+    private int bb = 1;//ending value
     private double[] arr = new double[countt];
      public static void main(String []args){
-        HelloWorld instance = new HelloWorld();
+        LinearInterpolation instance = new LinearInterpolation();
         instance.arr = instance.lerp(instance.aa, instance.bb, instance.countt);
         for(double i : instance.arr){
             System.out.printf("%.5f", i);
@@ -17,7 +17,7 @@ public class LinearInterpolation{
          double[] array = new double[count  + 1];
          if(b - a > 0){
             for(int i = 1; i < count + 2; i++){
-                 array[i-1] = (a + (i-1)*(b-a)/count);
+                 array[i-1] = (double)a + ((double)(i)-1)*((double)(b)-(double)(a))/(double)(count);
             }
          }
          else{
