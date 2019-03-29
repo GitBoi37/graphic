@@ -1,5 +1,6 @@
 package rectsNdots;
 
+import java.util.ArrayList;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -10,19 +11,19 @@ import java.awt.Font;
 import javax.swing.JOptionPane;
 import java.awt.event.*;
 public class AnimBoard extends JPanel implements Runnable, KeyListener{
-    /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	private Thread animator;
+    private Thread animator;
     private final int DELAY = 5;
     private final int s = 100;
     private final int lerping = 7;
     private final int dotTimer = 10;
+    private final int spawnTimer = 100;
     private final int minSize = 10;
+    private boolean left = false;
+    private boolean up = false;
+    private int spawn = 0;
     private int tick = 0;
     private Rect player = new Rect();
-    private Dot[] dots = new Dot[1000];
+    private ArrayList<Dot> dots = new ArrayList<Dot>();
     private int score = 0;
     public AnimBoard(){
         super();
@@ -30,13 +31,22 @@ public class AnimBoard extends JPanel implements Runnable, KeyListener{
         setFocusable(true);
         addKeyListener(this);
         Dimension d = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
+        player.setX((int)d.getWidth()/2);
+        player.setY((int)d.getHeight()/2);
+        player.setNewX((int)d.getWidth()/2);
+        player.setNewY((int)d.getHeight()/2);
         setPreferredSize(d);
-        for(int i = 0; i < dots.length; i++){
-            dots[i] = new Dot();
-            System.out.println(dots[i].getX());
+        for(int i = 0; i < 1000; i++){
+            dots.add(new Dot());
         }
-        for(Dot i : dots){
-            System.out.println(i.getX() + ", " + i.getY() +", " + i.getSize() + ", " + i.getColor());
+        for(int i = 0; i < dots.size(); i++){
+            for(int c = i + 1; c < dots.size() - 1; c++){
+                if(dots.get(i).getX() == dots.get(c).getX() || dots.get(i).getY() == dots.get(c).getY()){
+                    i = 0;
+                    dots.get(c).randomize();
+                    c = i + 1;
+                }
+            }
         }
     }
     
@@ -46,9 +56,9 @@ public class AnimBoard extends JPanel implements Runnable, KeyListener{
         Graphics2D g2d = (Graphics2D) g;
         
         g2d.setColor(Color.YELLOW);
-        for(int i = 0; i < dots.length; i++){
-            if(dots[i] != null) {
-                g2d.fillRect(dots[i].getX(),dots[i].getY(), dots[i].getSize(), dots[i].getSize());
+        for(int i = 0; i < dots.size(); i++){
+            if(dots.get(i) != null) {
+                g2d.fillRect(dots.get(i).getX(),dots.get(i).getY(), dots.get(i).getSize(), dots.get(i).getSize());
             }
         }
         g2d.setColor(Color.BLUE);
@@ -107,27 +117,53 @@ public class AnimBoard extends JPanel implements Runnable, KeyListener{
         animator.start();
     }
     public void check(){
-    	if(player.getSize() < minSize) {
-    		
-			player.setSize(minSize);
-    	}
-        for(int i = 0; i < dots.length; i++){
-            if(dots[i] != null){
-                if((player.getRect()).intersects(dots[i].bounds())){
-                    score++;
-                    dots[i] = null;
-                }
-                else {
-                	if(dotTimer == tick) {
-                		dots[i].pathfind(player.getX(), player.getY(), player.getSize());
-                		tick = 0;
-                	}
-                	else {
-                		tick++;
-                	}
-                }
+        if(player.getSize() < minSize) {
+            player.setSize(minSize);
+        }
+        for(int i = 0; i < dots.size(); i++){
+            if((player.getRect()).intersects(dots.get(i).bounds())){
+                score++;
+                dots.remove(i);
+                i--;
+            }
+            if(dotTimer == tick) {
+                dots.get(i).pathfind(player.getX(), player.getY(), player.getSize());
             }
         }
+        //dots.add(new Dot());
+        if(spawn == spawnTimer){
+            spawn = 0;
+            Dot toAdd = new Dot();
+            Dimension d = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
+            
+            if(up){
+                toAdd.setX((int)(Math.random() * d.getWidth() + 5));
+                toAdd.setY(1);
+                up = false;
+            }
+            else{
+                up = true;
+                toAdd.setX((int)(Math.random() * d.getWidth() + 5));
+                toAdd.setY((int)d.getHeight());
+            }
+            if(left){
+                toAdd.setY((int)(Math.random() * d.getWidth() + 5));
+                toAdd.setX(1);
+                left = false;
+                
+            }
+            else{
+                left = true;
+                toAdd.setX((int)(d.getHeight()));
+                toAdd.setY((int)(Math.random() * d.getWidth() + 5));
+            }
+            dots.add(toAdd);
+        }
+        spawn++;
+        if(dotTimer == tick){
+            tick = 0;
+        }
+        tick++;
         if(player.getX() < 0) {
             player.setX(0);
             player.setNewX(0);
@@ -140,37 +176,37 @@ public class AnimBoard extends JPanel implements Runnable, KeyListener{
             explode();
         }
         if(player.getX() > this.getWidth() - player.getSize() - 3) {
-        	player.setX(this.getWidth() - player.getSize() - 5);
-        	player.setNewX(this.getWidth() - player.getSize() - 5);
+            player.setX(this.getWidth() - player.getSize() - 5);
+            player.setNewX(this.getWidth() - player.getSize() - 5);
         }
         if(player.getY() > this.getHeight() - player.getSize() - 8) {
-        	player.setY(this.getHeight() - player.getSize()- 10);
-        	player.setNewY(this.getHeight() - player.getSize()- 10);
+            player.setY(this.getHeight() - player.getSize()- 10);
+            player.setNewY(this.getHeight() - player.getSize()- 10);
         }
         if(player.getY() > this.getHeight()-player.getSize() -10 || player.getX() > this.getWidth()-player.getSize()-5){
            deexplode(); 
         }
         if(Math.abs(player.getNewX() - player.getX()) >= lerping) {
-        	if(player.getNewX() >= player.getX()) {
-        		player.setX(player.getX() + lerping);
-        	}
-        	else {
-        		player.setX(player.getX() - lerping);
-        	}
+            if(player.getNewX() >= player.getX()) {
+                player.setX(player.getX() + lerping);
+            }
+            else {
+                player.setX(player.getX() - lerping);
+            }
         }
         else {
-        	player.setX(player.getNewX());
+            player.setX(player.getNewX());
         }
         if(Math.abs(player.getNewY() - player.getY()) >= lerping) {
-        	if(player.getNewY() >= player.getY()) {
-        		player.setY(player.getY() + lerping);
-        	}
-        	else {
-        		player.setY(player.getY() - lerping);
-        	}
+            if(player.getNewY() >= player.getY()) {
+                player.setY(player.getY() + lerping);
+            }
+            else {
+                player.setY(player.getY() - lerping);
+            }
         }
         else {
-        	player.setY(player.getNewY());
+            player.setY(player.getNewY());
         }
     }
     public void deexplode(){
