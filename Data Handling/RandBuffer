@@ -1,0 +1,15 @@
+public class Main{
+    public static void main(String[] args){
+        int left = 50, dLeft = 100;
+        int right = 950, dRight = 100;
+        int up = 50, dUp = 100;
+        int down = 950, dDown = 100;
+        for(int i = 0; i < 10; i++){
+            System.out.println(((int)(Math.random() * dRight) + right - dRight));
+            System.out.println(((int)(Math.random() * dLeft) + left));
+            System.out.println((int)(Math.random() * dDown) + down - dDown);
+            System.out.println((int)(Math.random() * dUp) + up);
+            
+        }
+    }
+}
