@@ -12,23 +12,27 @@ public class Dot{
     	size = 3;
     	Dimension d = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
         x = (int)(Math.random() * d.getWidth() - size) + 5;
-        y = (int)(Math.random() * d.getHeight() - size + 1);
+        y = (int)(Math.random() * (d.getHeight() - size - 15));
         color = Color.YELLOW;
     }
-    public void pathfind(int xN, int yN) {
-    	if(xN > x) {
+    public void pathfind(int xN, int yN, int size) {
+    	if(xN > x - size/2) {
     		x += speed;
     	}
     	else {
     		x -= speed;
     	}
-    	if(yN > y) {
+    	if(yN > y - size/2) {
     		y += speed;
     	}
     	else {
     		y -= speed;
     	}
-    	
+    }
+    public void randomize(){
+        Dimension d = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
+        x = (int)(Math.random() * d.getWidth() - size) + 5;
+        y = (int)(Math.random() * (d.getHeight() - size - 15));
     }
     public int getX(){return x;}
     public int getY(){return y;}
