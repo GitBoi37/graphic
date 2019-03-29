@@ -14,7 +14,10 @@ public class Dot{
         x = (int)(Math.random() * d.getWidth() - size) + 5;
         y = (int)(Math.random() * (d.getHeight() - size - 15));
         color = Color.YELLOW;
-    }
+    }/*
+    public Dot(int top, int bufferTop, int bottom, int bufferBottom, int left, int bufferLeft, int right, int bufferRight){
+        int left = (Math.random()
+    }*/
     public void pathfind(int xN, int yN, int size) {
     	if(xN > x - size/2) {
     		x += speed;
