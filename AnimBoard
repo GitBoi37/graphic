@@ -18,7 +18,7 @@ public class AnimBoard extends JPanel implements Runnable, KeyListener{
     private final int DELAY = 5;
     private final int s = 100;
     private final int lerping = 7;
-    private final int dotTimer = 50;
+    private final int dotTimer = 10;
     private final int minSize = 10;
     private int tick = 0;
     private Rect player = new Rect();
@@ -119,7 +119,7 @@ public class AnimBoard extends JPanel implements Runnable, KeyListener{
                 }
                 else {
                 	if(dotTimer == tick) {
-                		dots[i].pathfind(player.getX(), player.getY());
+                		dots[i].pathfind(player.getX(), player.getY(), player.getSize());
                 		tick = 0;
                 	}
                 	else {
@@ -128,14 +128,24 @@ public class AnimBoard extends JPanel implements Runnable, KeyListener{
                 }
             }
         }
-        if(player.getX() < -10) {
-            player.setX(1);
+        if(player.getX() < 0) {
+            player.setX(0);
+            player.setNewX(0);
         }
-        if(player.getY() < -10) {
-            player.setY(1);
+        if(player.getY() < 0) {
+            player.setY(0);
+            player.setNewY(0);
         }
         if(player.getY() < 0 || player.getY() < 0){
             explode();
+        }
+        if(player.getX() > this.getWidth() - player.getSize() - 3) {
+        	player.setX(this.getWidth() - player.getSize() - 5);
+        	player.setNewX(this.getWidth() - player.getSize() - 5);
+        }
+        if(player.getY() > this.getHeight() - player.getSize() - 8) {
+        	player.setY(this.getHeight() - player.getSize()- 10);
+        	player.setNewY(this.getHeight() - player.getSize()- 10);
         }
         if(player.getY() > this.getHeight()-player.getSize() -10 || player.getX() > this.getWidth()-player.getSize()-5){
            deexplode(); 
