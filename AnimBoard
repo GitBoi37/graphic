@@ -10,9 +10,17 @@ import java.awt.Font;
 import javax.swing.JOptionPane;
 import java.awt.event.*;
 public class AnimBoard extends JPanel implements Runnable, KeyListener{
-    private Thread animator;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private Thread animator;
     private final int DELAY = 5;
     private final int s = 100;
+    private final int lerping = 7;
+    private final int dotTimer = 50;
+    private final int minSize = 10;
+    private int tick = 0;
     private Rect player = new Rect();
     private Dot[] dots = new Dot[1000];
     private int score = 0;
@@ -70,16 +78,16 @@ public class AnimBoard extends JPanel implements Runnable, KeyListener{
     }
     public void keyPressed(KeyEvent key){
         if(key.getKeyCode() == KeyEvent.VK_A){
-            player.setX(player.getX()-s);
+            player.setNewX(player.getX()-s);
         }
         if(key.getKeyCode() == KeyEvent.VK_S){
-            player.setY(player.getY()+s);
+            player.setNewY(player.getY()+s);
         }
         if(key.getKeyCode() == KeyEvent.VK_D){
-            player.setX(player.getX()+s);
+            player.setNewX(player.getX()+s);
         }
         if(key.getKeyCode() == KeyEvent.VK_W){
-            player.setY(player.getY()-s);
+            player.setNewY(player.getY()-s);
         }
         if(key.getKeyCode() == KeyEvent.VK_Q) {
             if(player.getSize()>20) {
@@ -99,11 +107,24 @@ public class AnimBoard extends JPanel implements Runnable, KeyListener{
         animator.start();
     }
     public void check(){
+    	if(player.getSize() < minSize) {
+    		
+			player.setSize(minSize);
+    	}
         for(int i = 0; i < dots.length; i++){
             if(dots[i] != null){
                 if((player.getRect()).intersects(dots[i].bounds())){
                     score++;
                     dots[i] = null;
+                }
+                else {
+                	if(dotTimer == tick) {
+                		dots[i].pathfind(player.getX(), player.getY());
+                		tick = 0;
+                	}
+                	else {
+                		tick++;
+                	}
                 }
             }
         }
@@ -118,6 +139,28 @@ public class AnimBoard extends JPanel implements Runnable, KeyListener{
         }
         if(player.getY() > this.getHeight()-player.getSize() -10 || player.getX() > this.getWidth()-player.getSize()-5){
            deexplode(); 
+        }
+        if(Math.abs(player.getNewX() - player.getX()) >= lerping) {
+        	if(player.getNewX() >= player.getX()) {
+        		player.setX(player.getX() + lerping);
+        	}
+        	else {
+        		player.setX(player.getX() - lerping);
+        	}
+        }
+        else {
+        	player.setX(player.getNewX());
+        }
+        if(Math.abs(player.getNewY() - player.getY()) >= lerping) {
+        	if(player.getNewY() >= player.getY()) {
+        		player.setY(player.getY() + lerping);
+        	}
+        	else {
+        		player.setY(player.getY() - lerping);
+        	}
+        }
+        else {
+        	player.setY(player.getNewY());
         }
     }
     public void deexplode(){
