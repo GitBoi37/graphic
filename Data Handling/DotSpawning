@@ -1,1 +1,80 @@
-
+package rectsNdots;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Rectangle;
+public class Dot{
+    private int y;
+    private int x;
+    private int size;
+    private final int speed = 1;
+    private Color color;
+    public Dot(){
+    	size = 3;
+    	Dimension d = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
+        x = (int)(Math.random() * d.getWidth() - size) + 5;
+        y = (int)(Math.random() * (d.getHeight() - size - 15));
+        color = Color.YELLOW;
+    }
+    public Dot(int top, int bufferTop, int bottom, int bufferBottom, int left, int bufferLeft, int right, int bufferRight){
+        boolean leftT = false;
+        boolean topT = false;
+        int temp = (int)(Math.random()*2);
+        if(temp == 0){
+            topT = true;
+        }
+        else{
+            topT = false;
+        }
+        temp = (int)(Math.random()*2);
+        if(temp == 0){
+            leftT = false;
+        }
+        else{
+            leftT  = true;
+        }
+        if(leftT){
+          x = (int)(Math.random()*bufferLeft)+left;
+          y = (int)(Math.random()*top-bottom*2) + bottom;
+        }
+        else{
+          x = (int)(Math.random()*bufferRight)+right-bufferRight;
+          y = (int)(Math.random()*top-bottom*2) + bottom;
+        }
+        if(topT){
+          x = (int)(Math.random()*right-left*2) + left;
+          y= (int)(Math.random()*bufferTop) + top;//fix all of this
+        }
+        else{
+          x = (int)(Math.random()*right-left*2) + left;
+          y = (int)(Math.random()*bufferTop
+        }
+    }
+    public void pathfind(int xN, int yN, int size) {
+    	if(xN > x - size/2) {
+    		x += speed;
+    	}
+    	else {
+    		x -= speed;
+    	}
+    	if(yN > y - size/2) {
+    		y += speed;
+    	}
+    	else {
+    		y -= speed;
+    	}
+    }
+    public void randomize(){
+        Dimension d = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
+        x = (int)(Math.random() * d.getWidth() - size) + 5;
+        y = (int)(Math.random() * (d.getHeight() - size - 15));
+    }
+    public int getX(){return x;}
+    public int getY(){return y;}
+    public int getSize(){return size;}
+    public Color getColor(){return color;}
+    public void setX(int x){this.x = x;}
+    public void setY(int y){this.y = y;}
+    public void setSize(int size){this.size = size;}
+    public void setColor(Color color){this.color = color;}
+    public Rectangle bounds() {return (new Rectangle(x,y,size,size));}
+}
