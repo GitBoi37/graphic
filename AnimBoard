@@ -11,7 +11,11 @@ import java.awt.Font;
 import javax.swing.JOptionPane;
 import java.awt.event.*;
 public class AnimBoard extends JPanel implements Runnable, KeyListener{
-    private Thread animator;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private Thread animator;
     private final int DELAY = 5;
     private final int s = 100;
     private final int lerping = 7;
@@ -130,7 +134,12 @@ public class AnimBoard extends JPanel implements Runnable, KeyListener{
                 dots.get(i).pathfind(player.getX(), player.getY(), player.getSize());
             }
         }
+        Dimension d = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
         //dots.add(new Dot());
+        //dots.add(new Dot());
+        //dots.add(new Dot());
+        //dots.add(new Dot());
+        dots.add(new Dot(10, (int)d.getHeight()-10, 20, (int)d.getWidth()-10, 20));/*
         if(spawn == spawnTimer){
             spawn = 0;
             Dot toAdd = new Dot();
@@ -158,7 +167,7 @@ public class AnimBoard extends JPanel implements Runnable, KeyListener{
                 toAdd.setY((int)(Math.random() * d.getWidth() + 5));
             }
             dots.add(toAdd);
-        }
+        }*/
         spawn++;
         if(dotTimer == tick){
             tick = 0;
