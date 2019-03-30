@@ -14,10 +14,56 @@ public class Dot{
         x = (int)(Math.random() * d.getWidth() - size) + 5;
         y = (int)(Math.random() * (d.getHeight() - size - 15));
         color = Color.YELLOW;
-    }/*
-    public Dot(int top, int bufferTop, int bottom, int bufferBottom, int left, int bufferLeft, int right, int bufferRight){
-        int left = (Math.random()
-    }*/
+    }
+    public Dot(int top, int bottom, int left, int right, int buffer){
+    	//dots.add(new Dot(10, 20, (int)d.getHeight()-10, 20, 10, 20, (int)d.getWidth()-10, 20));
+    	size = 3;
+    	color = Color.YELLOW;
+        boolean leftT = false;
+        boolean topT = false;
+        boolean topLeft = false;
+        int temp = (int)(Math.random()*2);
+        if(temp == 0){
+            topT = true;
+        }
+        else{
+            topT = false;
+        }
+        temp = (int)(Math.random()*2);
+        if(temp == 0){
+            leftT = false;
+        }
+        else{
+            leftT  = true;
+        }
+        temp = (int)(Math.random()*2);
+        if(temp == 0) {
+        	topLeft = false;
+        }
+        else {
+        	topLeft = true;
+        }
+        if(!topLeft) {
+        	if(leftT){
+        		x = (int)(Math.random()*buffer)+left;
+          		y = (int)(Math.random()*bottom-top) + top;
+        	}
+        	else{
+        		x = (int)(Math.random()*buffer)+right-buffer;
+        		y = (int)(Math.random()*bottom - top) + top;
+        	}
+        }
+        else {
+        	if(topT){
+        		x = (int)(Math.random()*right-left) + left;
+        		y= (int)(Math.random()*buffer) + top;//fix all of this
+        	}
+        	else{
+        		x = (int)(Math.random()*right-left) + left;
+        		y = (int)(Math.random()*buffer) + bottom - buffer;
+        	}
+        }
+    }
     public void pathfind(int xN, int yN, int size) {
     	if(xN > x - size/2) {
     		x += speed;
