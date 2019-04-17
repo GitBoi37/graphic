@@ -3,7 +3,7 @@ package VisualSort;
 import java.awt.EventQueue;
 import javax.swing.JFrame;
 
-public class VisualSort extends JFrame{
+public class VisualSortDriver extends JFrame{
 	private static final long serialVersionUID = 1L;
 	public VisualSort(){
         initUI();
